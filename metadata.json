@@ -1,0 +1,7 @@
+{
+  "name": "Nexus Gaming Elite",
+  "description": "A premium, animation-heavy 3D gaming store featuring immersive WebGL scenes, GSAP scroll effects, and high-performance React components.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
