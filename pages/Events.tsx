@@ -1,7 +1,33 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
+/** Given a base date, keep adding 6 months until it's in the future. */
+const getNextEventDate = (baseYear: number, baseMonth: number, baseDay: number): string => {
+  const now = new Date();
+  let year = baseYear;
+  let month = baseMonth; // 0-indexed
+
+  while (new Date(year, month, baseDay) <= now) {
+    month += 6;
+    if (month > 11) {
+      year += Math.floor(month / 12);
+      month = month % 12;
+    }
+  }
+
+  return new Date(year, month, baseDay).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+};
+
 const Events: React.FC = () => {
+  const arenas = [
+    { name: 'Mission: Cyber Clash', date: getNextEventDate(2026, 2, 20) },    // base: Mar 20, 2026
+    { name: 'Mission: Quantum Showdown', date: getNextEventDate(2026, 3, 5) }, // base: Apr 5, 2026
+  ];
+
   return (
     <div className="pt-32 pb-20 px-6 max-w-7xl mx-auto">
       <header className="mb-12 md:mb-20 text-center">
@@ -21,16 +47,13 @@ const Events: React.FC = () => {
       <section className="mb-16">
         <h2 className="text-2xl md:text-4xl font-black font-orbitron mb-4 italic">🎮 Upcoming Arenas</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          <div className="glass p-4 rounded-xl text-center">
-            <h3 className="text-xl font-black font-orbitron mb-2">Mission: Cyber Clash</h3>
-            <p className="text-gray-400 mb-2">Starts: Feb 20, 2026</p>
-            <button className="bg-yellow-400 text-black px-6 py-2 rounded-full font-black font-orbitron hover:bg-white transition-all">Select Mission</button>
-          </div>
-          <div className="glass p-4 rounded-xl text-center">
-            <h3 className="text-xl font-black font-orbitron mb-2">Mission: Quantum Showdown</h3>
-            <p className="text-gray-400 mb-2">Starts: Mar 5, 2026</p>
-            <button className="bg-yellow-400 text-black px-6 py-2 rounded-full font-black font-orbitron hover:bg-white transition-all">Select Mission</button>
-          </div>
+          {arenas.map((arena, i) => (
+            <div key={i} className="glass p-4 rounded-xl text-center">
+              <h3 className="text-xl font-black font-orbitron mb-2">{arena.name}</h3>
+              <p className="text-gray-400 mb-2">Starts: {arena.date}</p>
+              <button className="bg-yellow-400 text-black px-6 py-2 rounded-full font-black font-orbitron hover:bg-white transition-all">Select Mission</button>
+            </div>
+          ))}
         </div>
       </section>
       {/* Join The War */}
