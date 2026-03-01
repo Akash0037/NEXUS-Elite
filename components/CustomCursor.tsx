@@ -5,11 +5,27 @@ import { motion, useSpring } from 'framer-motion';
 const CustomCursor: React.FC = () => {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
 
   const springX = useSpring(0, { stiffness: 150, damping: 20 });
   const springY = useSpring(0, { stiffness: 150, damping: 20 });
 
+  // Detect desktop: no touch support AND screen width > 1024px
   useEffect(() => {
+    const checkDesktop = () => {
+      const hasNoTouch = !('ontouchstart' in window) && !(navigator.maxTouchPoints > 0);
+      const isWideScreen = window.innerWidth > 1024;
+      setIsDesktop(hasNoTouch && isWideScreen);
+    };
+
+    checkDesktop();
+    window.addEventListener('resize', checkDesktop);
+    return () => window.removeEventListener('resize', checkDesktop);
+  }, []);
+
+  useEffect(() => {
+    if (!isDesktop) return;
+
     const handleMouseMove = (e: MouseEvent) => {
       setMousePos({ x: e.clientX, y: e.clientY });
       springX.set(e.clientX - 16);
@@ -19,9 +35,9 @@ const CustomCursor: React.FC = () => {
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (
-        target.tagName === 'A' || 
-        target.tagName === 'BUTTON' || 
-        target.closest('button') || 
+        target.tagName === 'A' ||
+        target.tagName === 'BUTTON' ||
+        target.closest('button') ||
         target.closest('a')
       ) {
         setIsHovering(true);
@@ -36,7 +52,10 @@ const CustomCursor: React.FC = () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseover', handleMouseOver);
     };
-  }, [springX, springY]);
+  }, [springX, springY, isDesktop]);
+
+  // Don't render custom cursor on mobile/tablet
+  if (!isDesktop) return null;
 
   return (
     <>
@@ -61,3 +80,4 @@ const CustomCursor: React.FC = () => {
 };
 
 export default CustomCursor;
+
