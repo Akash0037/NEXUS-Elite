@@ -11,6 +11,8 @@ import Auth from './pages/Auth';
 import About from './pages/About';
 import CartDrawer from './components/CartDrawer';
 import { CartProvider } from './context/CartContext';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 import { AnimatePresence, motion } from 'framer-motion';
 
 /**
@@ -188,102 +190,104 @@ import Community from './pages/Community';
 function App() {
   return (
     <Router>
-      <CartProvider>
-        <div className="relative min-h-screen bg-[#050505] text-white overflow-x-hidden selection:bg-yellow-400 selection:text-black">
-          <CustomCursor />
-          <AnimatedBackground />
-          <Navbar />
-          <CartDrawer />
-          <main className="relative z-10">
-            <AnimatePresence mode="wait">
-              <Routes>
-                <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
-                <Route path="/products" element={<PageWrapper><Products /></PageWrapper>} />
-                <Route path="/merchandise" element={<PageWrapper><Merchandise /></PageWrapper>} />
-                <Route path="/auth" element={<PageWrapper><Auth /></PageWrapper>} />
-                <Route path="/about" element={<PageWrapper><About /></PageWrapper>} />
-                <Route path="/contact" element={<PageWrapper><Contact /></PageWrapper>} />
-                <Route path="/events" element={<PageWrapper><Events /></PageWrapper>} />
-                <Route path="/community" element={<PageWrapper><Community /></PageWrapper>} />
-              </Routes>
-            </AnimatePresence>
-          </main>
+      <AuthProvider>
+        <CartProvider>
+          <div className="relative min-h-screen bg-[#050505] text-white overflow-x-hidden selection:bg-yellow-400 selection:text-black">
+            <CustomCursor />
+            <AnimatedBackground />
+            <Navbar />
+            <CartDrawer />
+            <main className="relative z-10">
+              <AnimatePresence mode="wait">
+                <Routes>
+                  <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
+                  <Route path="/products" element={<ProtectedRoute><PageWrapper><Products /></PageWrapper></ProtectedRoute>} />
+                  <Route path="/merchandise" element={<ProtectedRoute><PageWrapper><Merchandise /></PageWrapper></ProtectedRoute>} />
+                  <Route path="/auth" element={<PageWrapper><Auth /></PageWrapper>} />
+                  <Route path="/about" element={<ProtectedRoute><PageWrapper><About /></PageWrapper></ProtectedRoute>} />
+                  <Route path="/contact" element={<ProtectedRoute><PageWrapper><Contact /></PageWrapper></ProtectedRoute>} />
+                  <Route path="/events" element={<ProtectedRoute><PageWrapper><Events /></PageWrapper></ProtectedRoute>} />
+                  <Route path="/community" element={<ProtectedRoute><PageWrapper><Community /></PageWrapper></ProtectedRoute>} />
+                </Routes>
+              </AnimatePresence>
+            </main>
 
-          {/* ──────────── Footer ──────────── */}
-          <footer className="relative z-10 border-t border-yellow-400/10 bg-gradient-to-b from-[#050505] via-[#080808] to-[#0a0a0a] overflow-hidden">
-            <FooterParticles />
+            {/* ──────────── Footer ──────────── */}
+            <footer className="relative z-10 border-t border-yellow-400/10 bg-gradient-to-b from-[#050505] via-[#080808] to-[#0a0a0a] overflow-hidden">
+              <FooterParticles />
 
-            <div className="relative z-10 max-w-7xl mx-auto px-6 pt-16 pb-8">
-              {/* Top row */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-14">
-                {/* Brand */}
-                <div>
-                  <h2 className="text-2xl font-black font-orbitron tracking-tighter italic text-yellow-400 mb-3">
-                    NEXUS ELITE
-                  </h2>
-                  <p className="text-gray-500 text-sm leading-relaxed max-w-xs">
-                    Premium gaming gear, streetwear drops, and elite esports culture — all in one cyberpunk-forged hub.
-                  </p>
-                </div>
+              <div className="relative z-10 max-w-7xl mx-auto px-6 pt-16 pb-8">
+                {/* Top row */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-14">
+                  {/* Brand */}
+                  <div>
+                    <h2 className="text-2xl font-black font-orbitron tracking-tighter italic text-yellow-400 mb-3">
+                      NEXUS ELITE
+                    </h2>
+                    <p className="text-gray-500 text-sm leading-relaxed max-w-xs">
+                      Premium gaming gear, streetwear drops, and elite esports culture — all in one cyberpunk-forged hub.
+                    </p>
+                  </div>
 
-                {/* Quick Links */}
-                <div>
-                  <h3 className="text-xs font-black uppercase tracking-[0.25em] text-gray-400 mb-4">Quick Links</h3>
-                  <ul className="space-y-2">
-                    {[
-                      { label: 'Home', to: '/' },
-                      { label: 'Arsenal', to: '/products' },
-                      { label: 'Armory', to: '/merchandise' },
-                      { label: 'About', to: '/about' },
-                      { label: 'Contact', to: '/contact' },
-                    ].map(link => (
-                      <li key={link.to}>
-                        <Link
-                          to={link.to}
-                          className="text-gray-500 hover:text-yellow-400 transition-colors text-sm font-medium"
+                  {/* Quick Links */}
+                  <div>
+                    <h3 className="text-xs font-black uppercase tracking-[0.25em] text-gray-400 mb-4">Quick Links</h3>
+                    <ul className="space-y-2">
+                      {[
+                        { label: 'Home', to: '/' },
+                        { label: 'Arsenal', to: '/products' },
+                        { label: 'Armory', to: '/merchandise' },
+                        { label: 'About', to: '/about' },
+                        { label: 'Contact', to: '/contact' },
+                      ].map(link => (
+                        <li key={link.to}>
+                          <Link
+                            to={link.to}
+                            className="text-gray-500 hover:text-yellow-400 transition-colors text-sm font-medium"
+                          >
+                            {link.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Socials / Newsletter */}
+                  <div>
+                    <h3 className="text-xs font-black uppercase tracking-[0.25em] text-gray-400 mb-4">Stay Connected</h3>
+                    <p className="text-gray-500 text-sm mb-4 max-w-xs">
+                      Follow us for exclusive drops, event announcements, and community highlights.
+                    </p>
+                    <div className="flex gap-3">
+                      {['Twitter', 'Discord', 'YouTube'].map(platform => (
+                        <a
+                          key={platform}
+                          href="#"
+                          className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-yellow-400 hover:border-yellow-400/30 transition-all"
                         >
-                          {link.label}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
+                          {platform}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
                 </div>
 
-                {/* Socials / Newsletter */}
-                <div>
-                  <h3 className="text-xs font-black uppercase tracking-[0.25em] text-gray-400 mb-4">Stay Connected</h3>
-                  <p className="text-gray-500 text-sm mb-4 max-w-xs">
-                    Follow us for exclusive drops, event announcements, and community highlights.
-                  </p>
-                  <div className="flex gap-3">
-                    {['Twitter', 'Discord', 'YouTube'].map(platform => (
-                      <a
-                        key={platform}
-                        href="#"
-                        className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-yellow-400 hover:border-yellow-400/30 transition-all"
-                      >
-                        {platform}
-                      </a>
-                    ))}
+                {/* Divider */}
+                <div className="h-px w-full bg-gradient-to-r from-transparent via-yellow-400/20 to-transparent mb-6" />
+
+                {/* Bottom bar */}
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] text-gray-600 uppercase tracking-widest font-bold">
+                  <span>&copy; {new Date().getFullYear()} Nexus Elite Gaming. All rights reserved.</span>
+                  <div className="flex gap-6">
+                    <a href="#" className="hover:text-yellow-400 transition-colors">Privacy Policy</a>
+                    <a href="#" className="hover:text-yellow-400 transition-colors">Terms of Service</a>
                   </div>
                 </div>
               </div>
-
-              {/* Divider */}
-              <div className="h-px w-full bg-gradient-to-r from-transparent via-yellow-400/20 to-transparent mb-6" />
-
-              {/* Bottom bar */}
-              <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] text-gray-600 uppercase tracking-widest font-bold">
-                <span>&copy; {new Date().getFullYear()} Nexus Elite Gaming. All rights reserved.</span>
-                <div className="flex gap-6">
-                  <a href="#" className="hover:text-yellow-400 transition-colors">Privacy Policy</a>
-                  <a href="#" className="hover:text-yellow-400 transition-colors">Terms of Service</a>
-                </div>
-              </div>
-            </div>
-          </footer>
-        </div>
-      </CartProvider>
+            </footer>
+          </div>
+        </CartProvider>
+      </AuthProvider>
     </Router>
   );
 }

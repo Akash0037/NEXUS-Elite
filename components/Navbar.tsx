@@ -1,15 +1,17 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingCart, Menu, X, User, Gamepad2 } from 'lucide-react';
+import { ShoppingCart, Menu, X, User, Gamepad2, LogOut } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { itemCount, setIsCartOpen } = useCart();
+  const { isLoggedIn, logout } = useAuth();
 
   // Prevent background scrolling when menu is open
   useEffect(() => {
@@ -128,10 +130,17 @@ const Navbar: React.FC = () => {
             )}
           </button>
           <button
-            onClick={() => navigate('/auth')}
+            onClick={() => {
+              if (isLoggedIn) {
+                logout();
+                navigate('/');
+              } else {
+                navigate('/auth');
+              }
+            }}
             className="hidden md:block text-gray-400 hover:text-white transition-colors p-2"
           >
-            <User size={20} />
+            {isLoggedIn ? <LogOut size={20} /> : <User size={20} />}
           </button>
 
           <button
@@ -213,11 +222,28 @@ const Navbar: React.FC = () => {
 
               <motion.div variants={itemVariants} className="pt-6 mt-2 border-t border-white/10">
                 <button
-                  onClick={() => { navigate('/auth'); setIsOpen(false); }}
+                  onClick={() => {
+                    if (isLoggedIn) {
+                      logout();
+                      navigate('/');
+                    } else {
+                      navigate('/auth');
+                    }
+                    setIsOpen(false);
+                  }}
                   className="w-full text-xl font-black font-orbitron py-4 flex items-center justify-center gap-3 bg-white/5 rounded-2xl hover:bg-yellow-400 hover:text-black transition-all group"
                 >
-                  <User size={20} className="group-hover:scale-110 transition-transform" />
-                  <span className="tracking-tighter italic uppercase">Account Protocol</span>
+                  {isLoggedIn ? (
+                    <>
+                      <LogOut size={20} className="group-hover:scale-110 transition-transform" />
+                      <span className="tracking-tighter italic uppercase">Disconnect</span>
+                    </>
+                  ) : (
+                    <>
+                      <User size={20} className="group-hover:scale-110 transition-transform" />
+                      <span className="tracking-tighter italic uppercase">Account Protocol</span>
+                    </>
+                  )}
                 </button>
               </motion.div>
 

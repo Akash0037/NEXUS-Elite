@@ -2,10 +2,28 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LogIn, UserPlus, Mail, Lock, User, Facebook, Chrome, ShieldCheck, Zap } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Auth: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [gamertag, setGamertag] = useState('');
+  const { isLoggedIn, login } = useAuth();
+  const navigate = useNavigate();
+
+  // If already logged in, redirect to home
+  if (isLoggedIn) {
+    return <Navigate to="/" replace />;
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !password) return;
+    login({ email, gamertag: gamertag || email.split('@')[0] });
+    navigate('/');
+  };
 
   const containerVariants = {
     initial: { opacity: 0, scale: 0.9, filter: 'blur(10px)' },
@@ -15,7 +33,7 @@ const Auth: React.FC = () => {
 
   const formVariants = {
     hidden: { opacity: 0, x: isLogin ? -50 : 50 },
-    visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: "easeOut" } }
+    visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: "easeOut" as const } }
   };
 
   return (
@@ -36,14 +54,14 @@ const Auth: React.FC = () => {
         {/* Left Side: Brand Visuals */}
         <div className="hidden md:flex md:w-1/2 bg-black/40 relative p-12 flex-col justify-between overflow-hidden">
           <div className="absolute inset-0 z-0">
-            <img 
-              src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop" 
+            <img
+              src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop"
               className="w-full h-full object-cover opacity-20 grayscale"
               alt="Gaming background"
             />
             <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-transparent to-yellow-400/10" />
           </div>
-          
+
           <div className="relative z-10">
             <h2 className="text-4xl font-black font-orbitron italic tracking-tighter leading-none mb-6">
               JOIN THE <br /><span className="text-yellow-400">ELITE NEXUS</span>
@@ -123,6 +141,8 @@ const Auth: React.FC = () => {
                     <input
                       type="text"
                       placeholder="GAMERTAG"
+                      value={gamertag}
+                      onChange={(e) => setGamertag(e.target.value)}
                       className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-6 text-sm font-bold tracking-widest focus:outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400/50 transition-all uppercase"
                     />
                   </div>
@@ -132,6 +152,8 @@ const Auth: React.FC = () => {
                   <input
                     type="email"
                     placeholder="EMAIL ADDRESS"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-6 text-sm font-bold tracking-widest focus:outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400/50 transition-all uppercase"
                   />
                 </div>
@@ -140,6 +162,8 @@ const Auth: React.FC = () => {
                   <input
                     type="password"
                     placeholder="ENCRYPTION KEY"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-6 text-sm font-bold tracking-widest focus:outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400/50 transition-all"
                   />
                 </div>
@@ -153,7 +177,10 @@ const Auth: React.FC = () => {
                 </div>
               )}
 
-              <button className="w-full py-5 bg-white text-black font-black font-orbitron rounded-2xl flex items-center justify-center gap-3 hover:bg-yellow-400 hover:scale-[1.02] active:scale-95 transition-all shadow-xl group">
+              <button
+                onClick={handleSubmit}
+                className="w-full py-5 bg-white text-black font-black font-orbitron rounded-2xl flex items-center justify-center gap-3 hover:bg-yellow-400 hover:scale-[1.02] active:scale-95 transition-all shadow-xl group"
+              >
                 <span className="uppercase tracking-widest">{isLogin ? 'Login Session' : 'Begin Deployment'}</span>
                 {isLogin ? <LogIn size={18} /> : <UserPlus size={18} />}
               </button>
